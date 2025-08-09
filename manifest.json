@@ -1,0 +1,12 @@
+{
+    "display_name": "Vertin的小提示",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "",
+    "author": "RaphllA",
+    "version": "1.0.0",
+    "homePage": "https://github.com/RaphllA/vertin-tips",
+    "description": "为SillyTavern添加AI回复提示音，支持成功/错误分离与神秘模式"
+}
