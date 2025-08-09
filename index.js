@@ -75,7 +75,7 @@ jQuery(async () => {
 });
 
 // 扫描音频文件夹中的所有音频文件
-async function scanAudioFiles(showToast = false) {
+async function scanAudioFiles() {
     // 获取文件列表
     async function getFilesFromFolder(folderType) {
         const testFiles = new Set();
@@ -83,10 +83,10 @@ async function scanAudioFiles(showToast = false) {
         // 根据文件夹类型添加常见文件
         if (folderType === 'success') {
             ['voice.mp3', 'okay.mp3', '叮咚鸡！.mp3', 'success.mp3',
-             'complete.mp3', 'done.mp3', 'notify.mp3', '星际曼波.mp3', '哈基米.mp3'].forEach(f => testFiles.add(f));
+             'complete.mp3', 'done.mp3', 'notify.mp3', '星际曼波.mp3', '哈基米.mp3', '花Q.mp3'].forEach(f => testFiles.add(f));
         } else {
             ['error_normal.mp3', 'error.mp3', 'fail.mp3', 'warning.mp3',
-             '1754735971690474921-299758139797688.mp3', '星际曼波.mp3', '哈基米.mp3'].forEach(f => testFiles.add(f));
+             '1754735971690474921-299758139797688.mp3', '星际曼波.mp3', '哈基米.mp3', 'faq.mp3'].forEach(f => testFiles.add(f));
         }
 
         // 添加用户可能添加的文件名（减少测试数量）
@@ -150,14 +150,6 @@ async function scanAudioFiles(showToast = false) {
         console.warn(`[${extensionName}] 未找到错误音频文件，请在 audio/error/ 文件夹中放置音频文件`);
     } else {
         console.log(`[${extensionName}] 找到错误音频: ${errorAudioFiles.join(', ')}`);
-    }
-
-    // 如果是手动刷新且有变化，显示提示
-    if (showToast && (successChanged || errorChanged)) {
-        const message = `成功音频: ${successAudioFiles.length} 个\n错误音频: ${errorAudioFiles.length} 个`;
-        toastr.success(`音频列表已更新\n${message}`);
-    } else if (showToast) {
-        toastr.info('音频列表无变化');
     }
 
     return { successChanged, errorChanged };
@@ -679,9 +671,6 @@ function addSettingsUI() {
                             <select id="vertin-tips-success-select" class="text_pole" style="flex: 1; min-width: 220px;">
                                 <option value="">无</option>
                             </select>
-                            <button id="vertin-tips-refresh-success" class="menu_button" title="刷新列表">
-                                <i class="fa-solid fa-sync"></i>
-                            </button>
                             <button id="vertin-tips-test-success" class="menu_button" title="测试">
                                 <i class="fa-solid fa-play"></i>
                             </button>
@@ -699,9 +688,6 @@ function addSettingsUI() {
                             <select id="vertin-tips-error-select" class="text_pole" style="flex: 1; min-width: 220px;">
                                 <option value="">无</option>
                             </select>
-                            <button id="vertin-tips-refresh-error" class="menu_button" title="刷新列表">
-                                <i class="fa-solid fa-sync"></i>
-                            </button>
                             <button id="vertin-tips-test-error" class="menu_button" title="测试">
                                 <i class="fa-solid fa-play"></i>
                             </button>
@@ -776,40 +762,6 @@ function bindSettingsControls() {
 
     // 更新音量显示
     $('#vertin-tips-volume-value').text(Math.round(settings.volume * 100));
-
-    // 刷新按钮 - 成功
-    $('#vertin-tips-refresh-success').on('click', async function() {
-        const btn = $(this);
-        const icon = btn.find('i');
-        icon.addClass('fa-spin');
-        btn.prop('disabled', true);
-        const result = await scanAudioFiles(true);
-        updateSelectOptions();
-        if (result.successChanged) {
-            initAudio();
-        }
-        setTimeout(() => {
-            icon.removeClass('fa-spin');
-            btn.prop('disabled', false);
-        }, 500);
-    });
-
-    // 刷新按钮 - 错误
-    $('#vertin-tips-refresh-error').on('click', async function() {
-        const btn = $(this);
-        const icon = btn.find('i');
-        icon.addClass('fa-spin');
-        btn.prop('disabled', true);
-        const result = await scanAudioFiles(true);
-        updateSelectOptions();
-        if (result.errorChanged) {
-            initAudio();
-        }
-        setTimeout(() => {
-            icon.removeClass('fa-spin');
-            btn.prop('disabled', false);
-        }, 500);
-    });
 
     // 测试按钮
     $('#vertin-tips-test-success').on('click', function() {

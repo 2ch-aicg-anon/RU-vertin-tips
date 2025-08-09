@@ -10,14 +10,14 @@
 
 安装
 - 将 vertin-tips 目录复制到 SillyTavern/public/scripts/extensions/third-party/
-- 或使用sillytavern的插件安装功能通过github链接进行安装
 - 重启 SillyTavern 或刷新页面
 
 使用
 - 打开：SillyTavern → 扩展设置 → “Vertin的小提示”
 - 勾选“启用提示音”
 - 为“成功/错误提示音”选择音源：
-  - 上传本地文件（mp3/wav/ogg，≤10MB）
+  - 上传本地文件（mp3/wav/ogg，≤10MB），或
+  - 将文件放入 audio/success 与 audio/error，点击“刷新列表”
 - 点击“测试”试听；使用滑块调节音量
 
 说明
