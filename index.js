@@ -8,7 +8,8 @@ const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 const defaultSettings = {
     enabled: true,
     volume: 0.5,
-    mysteryMode: false  // 神秘模式
+    mysteryMode: false,  // 神秘模式
+    dingdongMode: false  // 叮咚鸡模式
 };
 
 // 音频对象
@@ -46,8 +47,14 @@ function initAudio() {
     const settings = extension_settings[extensionName];
     
     try {
-        // 根据神秘模式选择不同的音频文件
-        if (settings.mysteryMode) {
+        // 根据模式选择不同的音频文件
+        if (settings.dingdongMode) {
+            // 叮咚鸡模式 - 最高优先级
+            successSound = new Audio(`/${extensionFolderPath}/audio/叮咚鸡！.mp3`);
+            errorSound = settings.mysteryMode ? 
+                new Audio(`/${extensionFolderPath}/audio/error.mp3`) : 
+                new Audio(`/${extensionFolderPath}/audio/error_normal.mp3`);
+        } else if (settings.mysteryMode) {
             // 神秘模式音频
             successSound = new Audio(`/${extensionFolderPath}/audio/okay.mp3`);
             errorSound = new Audio(`/${extensionFolderPath}/audio/error.mp3`);
@@ -311,6 +318,12 @@ function addSettingsUI() {
                         </label>
                     </div>
                     <div style="margin-bottom: 10px;">
+                        <label class="checkbox_label">
+                            <input id="vertin-tips-dingdong" type="checkbox" />
+                            <span>我想叮咚鸡！🐔</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 10px;">
                         <label>
                             <div>音量: <span id="vertin-tips-volume-value">50</span>%</div>
                             <input id="vertin-tips-volume" type="range" min="0" max="100" value="50" style="width: 100%;" />
@@ -355,6 +368,16 @@ function bindSettingsControls() {
         .prop('checked', settings.mysteryMode)
         .on('change', function() {
             settings.mysteryMode = $(this).prop('checked');
+            saveSettingsDebounced();
+            // 重新初始化音频以加载不同的文件
+            initAudio();
+        });
+    
+    // 叮咚鸡模式开关
+    $('#vertin-tips-dingdong')
+        .prop('checked', settings.dingdongMode)
+        .on('change', function() {
+            settings.dingdongMode = $(this).prop('checked');
             saveSettingsDebounced();
             // 重新初始化音频以加载不同的文件
             initAudio();

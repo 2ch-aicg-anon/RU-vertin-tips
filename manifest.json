@@ -6,7 +6,7 @@
     "js": "index.js",
     "css": "",
     "author": "RaphllA",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "homePage": "https://github.com/RaphllA/vertin-tips",
-    "description": "为SillyTavern添加AI回复提示音，支持成功/错误分离与神秘模式"
+    "description": "现在可以叮咚鸡了"
 }
