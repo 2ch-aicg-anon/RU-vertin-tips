@@ -1,5 +1,5 @@
 {
-    "display_name": "Vertin的小提示",
+    "display_name": "Подсказки Вертина",
     "loading_order": 100,
     "requires": [],
     "optional": [],
@@ -7,6 +7,6 @@
     "css": "",
     "author": "RaphllA",
     "version": "1.0.3",
-    "homePage": "https://github.com/RaphllA/vertin-tips",
-    "description": "简洁的AI回复提示音插件"
+    "homePage": "https://github.com/2ch-aicg-anon/RU-vertin-tips",
+    "description": "Простой плагин звуковых уведомлений для ответов ИИ"
 }
