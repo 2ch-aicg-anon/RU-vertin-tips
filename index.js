@@ -56,7 +56,7 @@ jQuery(async () => {
        await initIDB();
        await loadCustomAudios();
    } catch (e) {
-       console.warn(`[${extensionName}] IndexedDB 初始化或读取失败:`, e);
+       console.warn(`[${extensionName}] Ошибка инициализации или чтения IndexedDB:`, e);
    }
 
    // 扫描内置音频文件（可选）
@@ -71,7 +71,7 @@ jQuery(async () => {
    // 添加设置界面
    addSettingsUI();
 
-   console.log(`[${extensionName}] 扩展已加载`);
+   console.log(`[${extensionName}] расширение загружено`);
 });
 
 // 扫描音频文件夹中的所有音频文件
@@ -118,7 +118,7 @@ async function scanAudioFiles() {
 
                 if (response.ok) {
                     existingFiles.push(filename);
-                    console.log(`[${extensionName}] 找到文件: ${folderType}/${filename}`);
+                    console.log(`[${extensionName}] найден файл: ${folderType}/${filename}`);
                 }
             } catch (e) {
                 clearTimeout(timeoutId);
@@ -141,15 +141,15 @@ async function scanAudioFiles() {
 
     // 显示扫描结果
     if (successAudioFiles.length === 0) {
-        console.warn(`[${extensionName}] 未找到成功音频文件，请在 audio/success/ 文件夹中放置音频文件`);
+        console.warn(`[${extensionName}] не найдены звуки успеха, поместите файлы в папку audio/success/`);
     } else {
-        console.log(`[${extensionName}] 找到成功音频: ${successAudioFiles.join(', ')}`);
+        console.log(`[${extensionName}] найдены звуки успеха: ${successAudioFiles.join(', ')}`);
     }
 
     if (errorAudioFiles.length === 0) {
-        console.warn(`[${extensionName}] 未找到错误音频文件，请在 audio/error/ 文件夹中放置音频文件`);
+        console.warn(`[${extensionName}] не найдены звуки ошибки, поместите файлы в папку audio/error/`);
     } else {
-        console.log(`[${extensionName}] 找到错误音频: ${errorAudioFiles.join(', ')}`);
+        console.log(`[${extensionName}] найдены звуки ошибки: ${errorAudioFiles.join(', ')}`);
     }
 
     return { successChanged, errorChanged };
@@ -287,7 +287,7 @@ function buildAudioFor(kind, value) {
         audio.load();
         return audio;
     } catch (error) {
-        console.error(`[${extensionName}] 构建音频失败:`, error);
+        console.error(`[${extensionName}] не удалось создать аудио:`, error);
         return null;
     }
 }
@@ -313,7 +313,7 @@ function initAudio() {
             errorSound = null;
         }
     } catch (error) {
-        console.error(`[${extensionName}] 无法加载音频文件:`, error);
+        console.error(`[${extensionName}] не удалось загрузить аудиофайл:`, error);
     }
 }
 
@@ -339,7 +339,7 @@ function registerEventListeners() {
 function onGenerationStarted() {
     generationState.isGenerating = true;
     generationState.wasStoppedOrError = false;
-    console.log(`[${extensionName}] AI开始生成回复`);
+    console.log(`[${extensionName}] ИИ начал генерировать ответ`);
 }
 
 // 拦截fetch响应来检测HTTP错误
@@ -354,7 +354,7 @@ function interceptFetchErrors() {
             // 检查是否是API请求且返回错误状态
             if (url.includes('/api/') && !response.ok && response.status >= 400) {
                 const errorInfo = `HTTP ${response.status} ${response.statusText}`;
-                console.log(`[${extensionName}] 检测到HTTP错误: ${errorInfo} - ${url}`);
+                console.log(`[${extensionName}] обнаружена ошибка HTTP: ${errorInfo} - ${url}`);
 
                 // 如果正在生成AI回复，记录错误
                 if (generationState.isGenerating) {
@@ -375,7 +375,7 @@ function interceptFetchErrors() {
             // 网络错误（无法连接、超时等）
             const url = args[0]?.toString() || '';
             if (url.includes('/api/') && generationState.isGenerating) {
-                console.log(`[${extensionName}] 检测到网络错误: ${error.message}`);
+                console.log(`[${extensionName}] обнаружена сетевая ошибка: ${error.message}`);
                 generationState.wasStoppedOrError = true;
                 generationState.lastErrorTime = Date.now();
 
@@ -439,7 +439,7 @@ function interceptToastrErrors() {
 
         // 检测到错误时的处理
         if (isApiError) {
-            console.log(`[${extensionName}] 检测到错误 [${errorType}]: ${fullText}`);
+            console.log(`[${extensionName}] обнаружена ошибка [${errorType}]: ${fullText}`);
             generationState.wasStoppedOrError = true;
             generationState.lastErrorTime = Date.now();
 
@@ -462,7 +462,7 @@ function onGenerationStopped() {
 
     generationState.wasStoppedOrError = true;
     generationState.isGenerating = false;
-    console.log(`[${extensionName}] AI生成被手动停止`);
+    console.log(`[${extensionName}] генерация ИИ остановлена вручную`);
 
     // 只在手动停止时播放错误音（API错误由toastr拦截处理）
     // 检查是否刚刚有API错误（1秒内）
@@ -482,10 +482,10 @@ function onGenerationEnded() {
 
     // 只有在启用且没有错误的情况下才播放成功音
     if (settings.enabled && !hasError && generationState.isGenerating) {
-        console.log(`[${extensionName}] AI回复成功，播放成功音`);
+        console.log(`[${extensionName}] ответ ИИ успешен, воспроизводится звук успеха`);
         playSuccessSound();
     } else if (settings.enabled && hasError) {
-        console.log(`[${extensionName}] 生成结束但有错误，不播放成功音`);
+        console.log(`[${extensionName}] генерация завершилась ошибкой, звук успеха не воспроизводится`);
     }
 
     // 重置状态
@@ -496,7 +496,7 @@ function onGenerationEnded() {
 // 播放成功提示音
 function playSuccessSound() {
     if (!successSound) {
-        console.warn(`[${extensionName}] 成功音频未初始化，尝试重新初始化`);
+        console.warn(`[${extensionName}] звук успеха не инициализирован, попытка повторной инициализации`);
         initAudio();
         if (!successSound) return;
     }
@@ -508,19 +508,19 @@ function playSuccessSound() {
 
         // 播放音频
         successSound.play().catch(error => {
-            console.error(`[${extensionName}] 播放成功提示音失败:`, error);
+            console.error(`[${extensionName}] не удалось воспроизвести звук успеха:`, error);
             // 尝试重新创建音频对象
             initAudio();
         });
     } catch (error) {
-        console.error(`[${extensionName}] 播放成功提示音失败:`, error);
+        console.error(`[${extensionName}] не удалось воспроизвести звук успеха:`, error);
     }
 }
 
 // 播放错误提示音
 function playErrorSound() {
     if (!errorSound) {
-        console.warn(`[${extensionName}] 错误音频未初始化，尝试重新初始化`);
+        console.warn(`[${extensionName}] звук ошибки не инициализирован, попытка повторной инициализации`);
         initAudio();
         if (!errorSound) return;
     }
@@ -532,12 +532,12 @@ function playErrorSound() {
 
         // 播放音频
         errorSound.play().catch(error => {
-            console.error(`[${extensionName}] 播放错误提示音失败:`, error);
+            console.error(`[${extensionName}] не удалось воспроизвести звук ошибки:`, error);
             // 尝试重新创建音频对象
             initAudio();
         });
     } catch (error) {
-        console.error(`[${extensionName}] 播放错误提示音失败:`, error);
+        console.error(`[${extensionName}] не удалось воспроизвести звук ошибки:`, error);
     }
 }
 
@@ -551,8 +551,8 @@ function updateSelectOptions() {
     errorSelect.empty();
 
     // 添加默认选项
-    successSelect.append('<option value="">无</option>');
-    errorSelect.append('<option value="">无</option>');
+    successSelect.append('<option value="">Нет</option>');
+    errorSelect.append('<option value="">Нет</option>');
 
     // 工具函数
     const addOption = (select, value, label) => {
@@ -566,7 +566,7 @@ function updateSelectOptions() {
             addOption(successSelect, file, displayName);
         });
     } else {
-        successSelect.append('<option value="" disabled>请上传，或在 audio/success/ 放置音频文件</option>');
+        successSelect.append('<option value="" disabled>Загрузите файл или поместите аудио в audio/success/</option>');
     }
 
     // 添加内置错误音频文件
@@ -576,20 +576,20 @@ function updateSelectOptions() {
             addOption(errorSelect, file, displayName);
         });
     } else {
-        errorSelect.append('<option value="" disabled>请上传，或在 audio/error/ 放置音频文件</option>');
+        errorSelect.append('<option value="" disabled>Загрузите файл или поместите аудио в audio/error/</option>');
     }
 
     // 添加自定义（IDB）成功项
     (customAudios.success || []).forEach(rec => {
         const value = `idb:${rec.id}`;
-        const label = `[自定义] ${rec.name || ('音频 ' + rec.id.slice(0,6))}`;
+        const label = `[Пользовательский] ${rec.name || ('Аудио ' + rec.id.slice(0,6))}`;
         addOption(successSelect, value, label);
     });
 
     // 添加自定义（IDB）错误项
     (customAudios.error || []).forEach(rec => {
         const value = `idb:${rec.id}`;
-        const label = `[自定义] ${rec.name || ('音频 ' + rec.id.slice(0,6))}`;
+        const label = `[Пользовательский] ${rec.name || ('Аудио ' + rec.id.slice(0,6))}`;
         addOption(errorSelect, value, label);
     });
 
@@ -647,7 +647,7 @@ function addSettingsUI() {
     <div id="vertin-tips-settings">
         <div class="inline-drawer">
             <div id="vertin-tips-header" class="inline-drawer-toggle inline-drawer-header">
-                <b>Vertin的小提示</b>
+                <b>Подсказки Вертина</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div id="vertin-tips-content" class="inline-drawer-content" style="display: none;">
@@ -655,26 +655,26 @@ function addSettingsUI() {
                     <div style="margin-bottom: 10px;">
                         <label class="checkbox_label">
                             <input id="vertin-tips-enabled" type="checkbox" />
-                            <span>启用提示音</span>
+                            <span>Включить звуковые уведомления</span>
                         </label>
                     </div>
 
                     <!-- 提示信息 -->
                     <div style="margin-bottom: 10px; font-size: 12px; color: #888; line-height: 1.4;">
-                        您可以上传本地音频；内置扫描可能受环境限制。支持 mp3/wav/ogg。
+                        Вы можете загрузить локальное аудио; встроенное сканирование может быть ограничено окружением. Поддерживаются mp3/wav/ogg.
                     </div>
 
                     <!-- 成功提示音选择 -->
                     <div style="margin-bottom: 10px;">
-                        <label>成功提示音:</label>
+                        <label>Звук успеха:</label>
                         <div style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
                             <select id="vertin-tips-success-select" class="text_pole" style="flex: 1; min-width: 220px;">
-                                <option value="">无</option>
+                                <option value="">Нет</option>
                             </select>
-                            <button id="vertin-tips-test-success" class="menu_button" title="测试">
+                            <button id="vertin-tips-test-success" class="menu_button" title="Тест">
                                 <i class="fa-solid fa-play"></i>
                             </button>
-                            <button id="vertin-tips-upload-success" class="menu_button" title="上传本地文件">
+                            <button id="vertin-tips-upload-success" class="menu_button" title="Загрузить файл">
                                 <i class="fa-solid fa-upload"></i>
                             </button>
                             <input id="vertin-tips-file-success" type="file" accept="audio/*,.mp3,.wav,.ogg" style="display:none" />
@@ -683,15 +683,15 @@ function addSettingsUI() {
 
                     <!-- 错误提示音选择 -->
                     <div style="margin-bottom: 10px;">
-                        <label>错误提示音:</label>
+                        <label>Звук ошибки:</label>
                         <div style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
                             <select id="vertin-tips-error-select" class="text_pole" style="flex: 1; min-width: 220px;">
-                                <option value="">无</option>
+                                <option value="">Нет</option>
                             </select>
-                            <button id="vertin-tips-test-error" class="menu_button" title="测试">
+                            <button id="vertin-tips-test-error" class="menu_button" title="Тест">
                                 <i class="fa-solid fa-play"></i>
                             </button>
-                            <button id="vertin-tips-upload-error" class="menu_button" title="上传本地文件">
+                            <button id="vertin-tips-upload-error" class="menu_button" title="Загрузить файл">
                                 <i class="fa-solid fa-upload"></i>
                             </button>
                             <input id="vertin-tips-file-error" type="file" accept="audio/*,.mp3,.wav,.ogg" style="display:none" />
@@ -701,7 +701,7 @@ function addSettingsUI() {
                     <!-- 音量控制 -->
                     <div style="margin-bottom: 10px;">
                         <label>
-                            <div>音量: <span id="vertin-tips-volume-value">50</span>%</div>
+                            <div>Громкость: <span id="vertin-tips-volume-value">50</span>%</div>
                             <input id="vertin-tips-volume" type="range" min="0" max="100" value="50" style="width: 100%;" />
                         </label>
                     </div>
@@ -773,11 +773,11 @@ function bindSettingsControls() {
 
     // ========== 上传（仅本地文件） ==========
     function validateFile(file) {
-        if (!file) return '未选择文件';
+        if (!file) return 'Файл не выбран';
         const okType = file.type?.startsWith('audio/') || /\.(mp3|wav|ogg)$/i.test(file.name || '');
-        if (!okType) return '仅支持音频文件（mp3/wav/ogg）';
+        if (!okType) return 'Поддерживаются только аудиофайлы (mp3/wav/ogg)';
         const max = 10 * 1024 * 1024; // 10MB
-        if (file.size > max) return '文件过大（>10MB）';
+        if (file.size > max) return 'Файл слишком большой (>10MB)';
         return '';
     }
 
@@ -793,9 +793,9 @@ function bindSettingsControls() {
             saveSettingsDebounced();
             updateSelectOptions();
             initAudio();
-            if (window.toastr) toastr.success('已添加并选中音频');
+            if (window.toastr) toastr.success('Аудио добавлено и выбрано');
         } catch (e) {
-            console.error(`[${extensionName}] 添加后处理失败:`, e);
+            console.error(`[${extensionName}] ошибка после добавления:`, e);
         }
     }
 
@@ -812,7 +812,7 @@ function bindSettingsControls() {
             await afterAdd('success', rec);
         } catch (e) {
             console.error(e);
-            if (window.toastr) toastr.error('添加失败');
+            if (window.toastr) toastr.error('Не удалось добавить');
         }
     });
 
@@ -829,7 +829,7 @@ function bindSettingsControls() {
             await afterAdd('error', rec);
         } catch (e) {
             console.error(e);
-            if (window.toastr) toastr.error('添加失败');
+            if (window.toastr) toastr.error('Не удалось добавить');
         }
     });
 
